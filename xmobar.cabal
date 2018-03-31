@@ -172,7 +172,11 @@ executable xmobar
       X11 >= 1.6.1,
       mtl >= 2.1 && < 2.3,
       parsec == 3.1.*,
-      stm >= 2.3 && < 2.5
+      stm >= 2.3 && < 2.5,
+      http-conduit,
+      aeson,
+      vector
+
 
     if flag(with_threaded)
        -- -threaded is a workaround for 100% CPU busy loop
@@ -237,7 +241,7 @@ executable xmobar
 
     if flag(with_weather) || flag(all_extensions)
        build-depends: HTTP >= 4000.2.4
-       other-modules: Plugins.Monitors.Weather
+       other-modules: Plugins.Monitors.Weather, Plugins.Monitors.OpenWeatherMap
        cpp-options: -DWEATHER
        if flag(with_conduit)
           -- use http-conduit  instead of simple-http

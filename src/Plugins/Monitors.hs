@@ -22,6 +22,7 @@ import Plugins
 import Plugins.Monitors.Common (runM, runMD)
 #ifdef WEATHER
 import Plugins.Monitors.Weather
+import qualified Plugins.Monitors.OpenWeatherMap as OWM
 #endif
 import Plugins.Monitors.Net
 import Plugins.Monitors.Mem
@@ -77,6 +78,7 @@ data Monitors = Network      Interface   Args Rate
               | CatInt       Int FilePath Args Rate
 #ifdef WEATHER
               | Weather      Station     Args Rate
+              | OWM          Station  AppId   Args Rate
 #endif
 #ifdef UVMETER
               | UVMeter      Station     Args Rate
@@ -101,6 +103,7 @@ type Args      = [String]
 type Program   = String
 type Alias     = String
 type Station   = String
+type AppId     = String
 type Zone      = String
 type ZoneNo    = Int
 type Interface = String
@@ -110,6 +113,7 @@ type DiskSpec  = [(String, String)]
 instance Exec Monitors where
 #ifdef WEATHER
     alias (Weather s _ _) = s
+    alias (OWM     s _ _ _) = s
 #endif
     alias (Network i _ _) = i
     alias (DynNetwork _ _) = "dynnetwork"
@@ -156,6 +160,7 @@ instance Exec Monitors where
     start (TopMem a r) = runM a topMemConfig runTopMem r
 #ifdef WEATHER
     start (Weather s a r) = runMD (a ++ [s]) weatherConfig runWeather r weatherReady
+    start (OWM s i a r) = runM (a ++ [s, i]) OWM.weatherConfig OWM.runWeather r
 #endif
     start (Thermal z a r) = runM (a ++ [z]) thermalConfig runThermal r
     start (ThermalZone z a r) =
